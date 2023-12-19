@@ -17,7 +17,6 @@ app.use(cors());
 
 const init=async ()=>{
   await client.connect();
-  console.log("connected to db");
 
   // const SQL1=`CREATE TABLE flavors(
   //             id SERIAL PRIMARY KEY,
@@ -29,7 +28,6 @@ const init=async ()=>{
   //data seeding
   const SQL = `INSERT INTO flavors (name) VALUES ('pineapple');`
   const dbrespose=await client.query(SQL);
-  console.log("data seeded....");
 }
 
 init();
@@ -39,7 +37,7 @@ app.get('/api/icecream', async (req,res,next)=>{
      try{
       const SQL=`SELECT * FROM flavors;`
         const dbresponse = await client.query(SQL);
-        console.log("dbresponse select *  ",dbresponse.rows);
+ 
         res.send(dbresponse.rows);
      }catch(error){
       next(error);
@@ -48,18 +46,16 @@ app.get('/api/icecream', async (req,res,next)=>{
 
 //configure Express route for querying data for given id
 app.get("/api/icecream/:id", async (req,res,next)=>{
- try{
-    console.log("/api/icecream/:id  " ,req.params.id);
+ try{  
     //get records matching id = req.params.id
     const SQL =`SELECT * FROM flavors
                 WHERE id=$1;`
     
     const dbresponse = await client.query(SQL,[req.params.id]);
-        console.log("dbresponse /api/icecream/:id  ",dbresponse.rows);
+      
     //handle rows=0
     if(!dbresponse.rows.length){
-        //handle error use Next()
-        console.log("error handling ...",req.params);
+        //handle error use Next()       
         next(
           {
             name: "Error occured",
@@ -81,12 +77,11 @@ app.get("/api/icecream/:id", async (req,res,next)=>{
 
 //configure Express route for deleting data for given id
 app.delete('/api/icecream/:id',async (req,res,next)=>{
-     try{
-        console.log("delete /api/icecream/:id ...",req.params.id)
+     try{       
           const SQL = `DELETE FROM flavors
                        WHERE id=$1;`
          const dbresponse = await client.query(SQL,[req.params.id]);
-         console.log("deleted record....",dbresponse.rows);
+  
          res.sendStatus(204);
      }catch(error){
       next(error);
